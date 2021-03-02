@@ -1,0 +1,15 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+  name: lighthouse
+build:
+  local:
+    push: false
+  artifacts:
+  - image: lighthouse
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - k8s-manifest.yml
