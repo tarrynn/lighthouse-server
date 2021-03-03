@@ -50,17 +50,31 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: lighthouse
-  name: lh-lb
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
-    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+  name: lhci-server
 spec:
-  type: LoadBalancer
   selector:
     app: lhci-server
   ports:
-    - name: http
-      protocol: TCP
+    - protocol: TCP
       port: 80
-      targetPort: lhci-http
+      targetPort: 9001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lhci-ingress
+  namespace: lighthouse
+  annotations:
+    kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: lhci-server
+            port:
+              number: 80
