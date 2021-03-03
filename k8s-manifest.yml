@@ -1,6 +1,12 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: lighthouse
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: lighthouse
   name: lhci-data-claim
 spec:
   accessModes:
@@ -12,12 +18,12 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: lighthouse
   name: lhci-server
 spec:
   selector:
     matchLabels:
       name: lhci-server
-  # there can be only one pod at a time because of the persistent volume claim
   strategy:
     type: Recreate
   template:
@@ -32,13 +38,9 @@ spec:
           volumeMounts:
             - mountPath: '/data'
               name: lhci-data-volume
-          # required for ingress health checks to work
           ports:
-            - containerPort: 9001
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 9001
+            - name: lhci-http
+              containerPort: 9001
       volumes:
         - name: lhci-data-volume
           persistentVolumeClaim:
@@ -47,12 +49,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: lhci-server
+  namespace: lighthouse
+  name: lh-lb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
 spec:
-  ports:
-  - port: 9001
-    targetPort: 9001
-    nodePort: 32222
+  type: LoadBalancer
   selector:
-    name: lhci-server
-  type: NodePort
+    app: lhci-server
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: lhci-http
