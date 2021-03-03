@@ -1,13 +1,11 @@
-### Creating the EKS cluster
+### Create plan
 
-    terraform init
+    terraform plan -var 'access_key=AKIAJIWAOJFINGDMBVGA' -var 'secret_key=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' --out=plan
 
-    terraform plan -var 'access_key=key' -var 'secret_key=key' -out=plan
-
-### Executing the planned changes
+### Apply Plan
 
     terraform apply "plan"
 
-### Destroying the EKS cluster
+### Delete infra
 
-    terraform destroy -var 'access_key=key' -var 'secret_key=key'
+    terraform destroy -var 'access_key=AKIAJIWAOJFINGDMBVGA' -var 'secret_key=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'
