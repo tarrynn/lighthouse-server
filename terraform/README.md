@@ -1,13 +1,30 @@
-### Creating the EKS cluster
+### Requirements
+
+    wget
+    awscli
+    kubectl
+    docker
+
+### Initialise terraform
 
     terraform init
 
-    terraform plan -var 'access_key=key' -var 'secret_key=key' -out=plan
+### Create plan
 
-### Executing the planned changes
+    terraform plan --out=plan
+
+### Apply Plan
 
     terraform apply "plan"
 
-### Destroying the EKS cluster
+### Add context to kubectl for the new cluster
 
-    terraform destroy -var 'access_key=key' -var 'secret_key=key'
+    aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
+
+### Install aws alb ingress controller
+
+    https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-setup/
+
+### Delete infra
+
+    terraform destroy
