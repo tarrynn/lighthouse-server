@@ -1,11 +1,26 @@
+### Requirements
+
+    wget
+    awscli
+    kubectl
+    docker
+
+### Initialise terraform
+
+    terraform init
+
 ### Create plan
 
-    terraform plan -var 'access_key=AKIAJIWAOJFINGDMBVGA' -var 'secret_key=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' --out=plan
+    terraform plan --out=plan
 
 ### Apply Plan
 
     terraform apply "plan"
 
+### Add context to kubectl for the new cluster
+
+    aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
+
 ### Delete infra
 
-    terraform destroy -var 'access_key=AKIAJIWAOJFINGDMBVGA' -var 'secret_key=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'
+    terraform destroy
