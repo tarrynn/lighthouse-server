@@ -1,0 +1,5 @@
+.terraform
+plan
+*.tfstate*
+.terraform.lock.hcl
+kubeconfig*
