@@ -6,7 +6,10 @@ build:
   artifacts:
   - image: lighthouse
     docker:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-lh
+  - image: lighthouse-nginx
+    docker:
+      dockerfile: Dockerfile-ng
 deploy:
   kubectl:
     manifests:
