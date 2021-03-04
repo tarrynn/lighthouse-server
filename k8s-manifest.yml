@@ -62,7 +62,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: lhci-ingress
+  name: lh1
   namespace: lighthouse
   annotations:
     kubernetes.io/ingress.class: "alb"
