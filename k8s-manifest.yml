@@ -24,6 +24,7 @@ spec:
   selector:
     matchLabels:
       name: lhci-server
+      tier: backend
   strategy:
     type: Recreate
   template:
@@ -31,6 +32,7 @@ spec:
       name: lhci-pod
       labels:
         name: lhci-server
+        tier: backend
     spec:
       containers:
         - name: lhci-server
@@ -66,9 +68,11 @@ metadata:
   name: lh1
   namespace: lighthouse
   annotations:
-    kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/healthcheck-path: /healthz
+    kubernetes.io/ingress.class: 'alb'
+    alb.ingress.kubernetes.io/scheme: 'internet-facing'
+    alb.ingress.kubernetes.io/healthcheck-path: '/healthz'
+    alb.ingress.kubernetes.io/success-codes: '200-399'
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '5'
 spec:
   defaultBackend:
     service:

@@ -23,7 +23,7 @@
 
     aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
 
-### Create and OIDC provider
+### Create an OIDC provider (before creating the alb ingress controller)
 
     aws eks describe-cluster --name $(terraform output -raw cluster_name) --query "cluster.identity.oidc.issuer" --output text
     eksctl utils associate-iam-oidc-provider --cluster $(terraform output -raw cluster_name) --approve
