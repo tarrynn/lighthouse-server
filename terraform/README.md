@@ -28,7 +28,11 @@
     aws eks describe-cluster --name $(terraform output -raw cluster_name) --query "cluster.identity.oidc.issuer" --output text
     eksctl utils associate-iam-oidc-provider --cluster $(terraform output -raw cluster_name) --approve
 
-### Some good helping articles
+### Install ssm agent on all worker nodes (don't forget to add AmazonSSMManagedInstanceCore policy to the worker iam role)
+
+    kubectl apply -f ssm_daemonset.yaml && sleep 1 && kubectl delete -f ssm_daemonset.yaml
+
+### Some helping articles
 
     https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
     https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
