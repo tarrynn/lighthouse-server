@@ -2,7 +2,8 @@ module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = local.cluster_name
   cluster_version = "1.19"
-  subnets         = module.vpc.private_subnets
+  subnets         = module.vpc.public_subnets
+  write_kubeconfig = false
 
   tags = {
     Environment = "test"
@@ -12,6 +13,7 @@ module "eks" {
 
   workers_group_defaults = {
     root_volume_type = "gp2"
+    root_volume_size = "100"
   }
 
   worker_groups = [
@@ -19,8 +21,11 @@ module "eks" {
       name                          = "worker-group-1"
       instance_type                 = "t2.medium"
       health_check_type             = "EC2"
+      public_ip                     = true
+      subnets                       = module.vpc.public_subnets
       asg_desired_capacity          = 2
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
+      bootstrap_extra_args          = "--enable-docker-bridge true"
     }
   ]
 }

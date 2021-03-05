@@ -1,80 +1,70 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: lighthouse
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: lighthouse
-  name: lhci-data-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: lighthouse
-  name: lhci-server
+  name: deployment-lighthouse
 spec:
   selector:
     matchLabels:
-      name: lhci-server
-  strategy:
-    type: Recreate
+      app.kubernetes.io/name: app-lhci
+  replicas: 2
   template:
     metadata:
-      name: lhci-pod
       labels:
-        name: lhci-server
+        app.kubernetes.io/name: app-lhci
     spec:
       containers:
-        - name: lhci-server
-          image: lighthouse
-          volumeMounts:
-            - mountPath: '/data'
-              name: lhci-data-volume
-          ports:
-            - name: lhci-http
-              containerPort: 9001
+      - name: app-lhci-bk
+        image: lighthouse
+        ports:
+          - name: app-lhci-bk
+            containerPort: 9001
+        volumeMounts:
+        - mountPath: /data
+          name: cache-volume
+      - name: app-lhci-fr
+        image: lighthouse-nginx
+        ports:
+        - containerPort: 80
       volumes:
-        - name: lhci-data-volume
-          persistentVolumeClaim:
-            claimName: lhci-data-claim
+        - name: cache-volume
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   namespace: lighthouse
-  name: lhci-server
+  name: service-lighthouse
 spec:
-  selector:
-    app: lhci-server
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 9001
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-lhci
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: lhci-ingress
   namespace: lighthouse
+  name: ingress-lighthouse
   annotations:
-    kubernetes.io/ingress.class: "alb"
+    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /healthcheck
 spec:
   rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: lhci-server
-            port:
-              number: 80
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: service-lighthouse
+              servicePort: 80
