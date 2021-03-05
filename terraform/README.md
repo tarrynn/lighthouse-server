@@ -46,6 +46,10 @@
     # to stop ssm on nodes
     kubectl delete -f ssm_daemonset.yaml
 
+### Install metrics collector for the cluster
+
+    kubectl apply -f metrics/
+
 ### Some helping articles
 
     https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
