@@ -15,7 +15,7 @@
 
     terraform plan --out=plan
 
-### Apply Plan
+### Apply Plan (it will stop before creating the alb ingress controller, for which you need to run the next steps)
 
     terraform apply "plan"
 
@@ -27,6 +27,11 @@
 
     aws eks describe-cluster --name $(terraform output -raw cluster_name) --query "cluster.identity.oidc.issuer" --output text
     eksctl utils associate-iam-oidc-provider --cluster $(terraform output -raw cluster_name) --approve
+
+### Continue deploying the rest of resources (the alb ingress controller and reqs)
+
+    terraform plan --out=plan
+    terraform apply "plan"
 
 ### Install ssm agent worker nodes
 
