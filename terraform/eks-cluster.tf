@@ -10,6 +10,7 @@ module "eks" {
   }
 
   vpc_id = module.vpc.vpc_id
+  enable_irsa = true
 
   workers_group_defaults = {
     root_volume_type = "gp2"

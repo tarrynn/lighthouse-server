@@ -32,3 +32,8 @@ output "cluster_name" {
   description = "Kubernetes Cluster Name"
   value       = local.cluster_name
 }
+
+output "oidc_url" {
+  description = "OIDC URL"
+  value       = module.eks.cluster_oidc_issuer_url
+}

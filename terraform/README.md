@@ -64,6 +64,10 @@
 
     https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html
 
+### Install the cluster-autoscaler
+
+    https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
+
 ### Some helping articles
 
     https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
