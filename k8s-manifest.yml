@@ -4,29 +4,26 @@ kind: Namespace
 metadata:
   name: lighthouse
 ---
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: lighthouse-sc
-  namespace: lighthouse
-provisioner: efs.csi.aws.com
----
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: lighthouse-pv
-  namespace: lighthouse
+  name: lighthouse-volume
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi # Doesn't really matter, as EFS does not enforce it anyway
   volumeMode: Filesystem
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: lighthouse-sc
-  csi:
-    driver: efs.csi.aws.com
-    volumeHandle: fs-84180bb1
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+    - rsize=1048576
+    - wsize=1048576
+    - timeo=600
+    - retrans=2
+  nfs:
+    path: /
+    server: fs-84180bb1.efs.eu-west-1.amazonaws.com
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -35,11 +32,11 @@ metadata:
   namespace: lighthouse
 spec:
   accessModes:
-    - ReadWriteMany
-  storageClassName: lighthouse-sc
+  - ReadWriteMany
+  storageClassName: ""
   resources:
     requests:
-      storage: 5Gi
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment

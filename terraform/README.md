@@ -51,6 +51,8 @@
     https://eu-west-1.console.aws.amazon.com/efs/home?region=eu-west-1#/file-systems
     https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
 
+    Make sure the EFS volume has the `worker_group_mgmt_one` security group associated with it to allow NFS traffic. 
+
 ### Install metrics collector && datadog for the cluster
 
     https://github.com/kubernetes/kube-state-metrics
