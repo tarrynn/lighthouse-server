@@ -24,7 +24,7 @@ spec:
   storageClassName: lighthouse-sc
   csi:
     driver: efs.csi.aws.com
-    volumeHandle: fs-84180bb1
+    volumeHandle: $EFS_VOLUME
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
