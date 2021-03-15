@@ -12,6 +12,16 @@ resource "aws_security_group" "worker_group_mgmt_one" {
       "10.0.0.0/8",
     ]
   }
+
+  ingress {
+    from_port = 2049
+    to_port   = 2049
+    protocol  = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/16"
+    ]
+  }
 }
 
 resource "aws_security_group" "all_worker_mgmt" {
