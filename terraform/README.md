@@ -46,6 +46,11 @@
     # to stop ssm on nodes
     kubectl delete -f ssm_daemonset.yaml
 
+### Create an EFS object and Install EFS CSI driver for EKS
+
+    https://eu-west-1.console.aws.amazon.com/efs/home?region=eu-west-1#/file-systems
+    https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
+
 ### Install metrics collector && datadog for the cluster
 
     https://github.com/kubernetes/kube-state-metrics
@@ -53,7 +58,6 @@
 
 ### Install the AWS EFS & EBS CSI driver (to allow EFS & EBS volume management for the cluster)
 
-    https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
     https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html
 
 ### Some helping articles

@@ -4,11 +4,48 @@ kind: Namespace
 metadata:
   name: lighthouse
 ---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: lighthouse-sc
+  namespace: lighthouse
+provisioner: efs.csi.aws.com
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: lighthouse-pv
+  namespace: lighthouse
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: lighthouse-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-84180bb1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: lighthouse-claim
+  namespace: lighthouse
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: lighthouse-sc
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: lighthouse
   name: deployment-lighthouse
+  namespace: lighthouse
 spec:
   selector:
     matchLabels:
@@ -26,15 +63,16 @@ spec:
           - name: app-lhci-bk
             containerPort: 9001
         volumeMounts:
-        - mountPath: /data
-          name: cache-volume
+        - name: persistent-storage
+          mountPath: /data
       - name: app-lhci-fr
         image: lighthouse-nginx
         ports:
         - containerPort: 80
       volumes:
-        - name: cache-volume
-          emptyDir: {}
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: lighthouse-claim
 ---
 apiVersion: v1
 kind: Service
