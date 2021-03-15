@@ -19,6 +19,18 @@ module "eks" {
   worker_groups = [
     {
       name                          = "worker-group-1"
+      tags                          = [
+                                        {
+                                          key = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+                                          value = "owned"
+                                          propagate_at_launch = true
+                                        },
+                                        {
+                                          key = "k8s.io/cluster-autoscaler/enabled"
+                                          value = true
+                                          propagate_at_launch = true
+                                        }
+                                      ]
       instance_type                 = "t2.medium"
       health_check_type             = "EC2"
       public_ip                     = true
