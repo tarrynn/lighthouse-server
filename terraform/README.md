@@ -57,13 +57,10 @@
     https://github.com/kubernetes/kube-state-metrics
     https://www.datadoghq.com/blog/eks-monitoring-datadog/
 
-### Install the AWS EFS & EBS CSI driver (to allow EFS & EBS volume management for the cluster)
-
-    https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html
-
 ### Install the cluster-autoscaler
 
     https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
+    https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa
 
 ### Some helping articles
 
