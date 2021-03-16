@@ -46,12 +46,9 @@
     # to stop ssm on nodes
     kubectl delete -f ssm_daemonset.yaml
 
-### Create an EFS object and Install EFS CSI driver for EKS
+### Install EFS CSI driver for EKS
 
-    https://eu-west-1.console.aws.amazon.com/efs/home?region=eu-west-1#/file-systems
     https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
-
-    Make sure the EFS volume has the `worker_group_mgmt_one` security group associated with it to allow NFS traffic.
 
     If you want to use EFS simply as a mounted volume without the CSI driver https://www.c2labs.com/post/persistent-storage-on-kubernetes-for-aws
 
