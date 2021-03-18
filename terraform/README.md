@@ -58,7 +58,7 @@
 
     You can then access the dashboard at (using the retrieved token from above):
 
-    http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#!/login
+    http://localhost:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#!/login
 
 ### Install the cluster-autoscaler
 
