@@ -6,6 +6,7 @@
     kubectl
     docker
     openssl
+    helm
 
 ### Initialise terraform
 
