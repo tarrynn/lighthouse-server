@@ -10,6 +10,7 @@ module "eks" {
   }
 
   vpc_id = module.vpc.vpc_id
+  enable_irsa = true
 
   workers_group_defaults = {
     root_volume_type = "gp2"
@@ -19,11 +20,25 @@ module "eks" {
   worker_groups = [
     {
       name                          = "worker-group-1"
+      tags                          = [
+                                        {
+                                          key = "k8s.io/cluster-autoscaler/${local.cluster_name}"
+                                          value = "owned"
+                                          propagate_at_launch = true
+                                        },
+                                        {
+                                          key = "k8s.io/cluster-autoscaler/enabled"
+                                          value = true
+                                          propagate_at_launch = true
+                                        }
+                                      ]
       instance_type                 = "t2.medium"
       health_check_type             = "EC2"
       public_ip                     = true
       subnets                       = module.vpc.public_subnets
       asg_desired_capacity          = 2
+      asg_min_size                  = 2
+      asg_max_size                  = 5
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       bootstrap_extra_args          = "--enable-docker-bridge true"
     }
