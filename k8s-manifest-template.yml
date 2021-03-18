@@ -60,6 +60,13 @@ spec:
         ports:
           - name: app-lhci-bk
             containerPort: 9001
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
         volumeMounts:
         - name: persistent-storage
           mountPath: /data
@@ -67,10 +74,37 @@ spec:
         image: lighthouse-nginx
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
       volumes:
         - name: persistent-storage
           persistentVolumeClaim:
             claimName: lighthouse-claim
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: lighthouse-hpa
+  namespace: lighthouse
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deployment-lighthouse
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
 ---
 apiVersion: v1
 kind: Service

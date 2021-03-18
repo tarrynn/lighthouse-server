@@ -11,27 +11,27 @@
 
     terraform init
 
-### Create plan
+### On first creation
+
+    Before planning and creating the entire infrastructure, comment out the resource `aws_efs_mount_target` inside `efs.tf` using `/*` and `*/`. That resource depends on the VPC being created first. After the VPC has been created, you can uncomment it and run `terraform plan` and `terraform apply` to update the EFS volume and create the mount targets for each of the private subnets in the new VPC.
+
+### Create and apply plan
 
     terraform plan --out=plan
-
-### Apply Plan (it will stop before creating the alb ingress controller, for which you need to run the next steps)
-
     terraform apply "plan"
+
+    If the process exits with `Error: error reading EKS Cluster`, just plan and apply again for the remaining resources
 
 ### Add context to kubectl for the new cluster
 
     aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
 
-### Create an OIDC provider (before creating the alb ingress controller)
+### Create an OIDC provider manually
+
+    This shouldn't be needed explicitly.
 
     aws eks describe-cluster --name $(terraform output -raw cluster_name) --query "cluster.identity.oidc.issuer" --output text
     eksctl utils associate-iam-oidc-provider --cluster $(terraform output -raw cluster_name) --approve
-
-### Continue deploying the rest of resources (the alb ingress controller and reqs)
-
-    terraform plan --out=plan
-    terraform apply "plan"
 
 ### Install ssm agent worker nodes
 
@@ -52,15 +52,37 @@
 
     If you want to use EFS simply as a mounted volume without the CSI driver https://www.c2labs.com/post/persistent-storage-on-kubernetes-for-aws
 
-### Install metrics collector && datadog for the cluster
+### Install metrics collector and dashboard
 
-    https://github.com/kubernetes/kube-state-metrics
-    https://www.datadoghq.com/blog/eks-monitoring-datadog/
+    https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+
+    kubectl apply -f metrics-server.yaml
+
+    https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
+
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.5/aio/deploy/recommended.yaml
+    kubectl apply -f eks-metrics-admin.yaml
+
+    To view the dashboard run:
+
+    kubectl proxy -p 8080
+    kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep eks-admin | awk '{print $1}')
+
+    You can then access the dashboard at (using the retrieved token from above):
+
+    http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#!/login
 
 ### Install the cluster-autoscaler
 
     https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
     https://github.com/terraform-aws-modules/terraform-aws-eks/tree/master/examples/irsa
+
+    helm repo add autoscaler https://kubernetes.github.io/autoscaler
+    helm repo update
+
+    Generate a helm values file based on `cluster-autoscaler-chart-values-template.yaml` and then install the autoscaler using those values:
+
+    helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler-chart --values=cluster-autoscaler-chart-values.yaml
 
 ### Some helping articles
 

@@ -37,6 +37,8 @@ module "eks" {
       public_ip                     = true
       subnets                       = module.vpc.public_subnets
       asg_desired_capacity          = 2
+      asg_min_size                  = 2
+      asg_max_size                  = 5
       additional_security_group_ids = [aws_security_group.worker_group_mgmt_one.id]
       bootstrap_extra_args          = "--enable-docker-bridge true"
     }

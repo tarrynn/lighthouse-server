@@ -6,10 +6,6 @@
         "storageMethod": "sql",
         "sqlDialect": "sqlite",
         "sqlDatabasePath": "/data/lhci.db"
-      },
-      "basicAuth": {
-        "username": "catalin",
-        "password": "test12345!"
       }
     }
   }

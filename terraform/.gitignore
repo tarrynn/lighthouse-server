@@ -10,7 +10,6 @@ crash.log
 .terraform*
 plan*
 kubeconfig*
-metrics-server*
 *.tar.gz
 
 # Ignore any .tfvars files that are generated automatically for each Terraform run. Most
