@@ -76,6 +76,29 @@ https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
     # access it at http://localhost:9090
     kubectl --namespace=prometheus port-forward deploy/prometheus-server 9090
 
+### Install the k8s cloudwatch adapter if needed
+
+https://github.com/awslabs/k8s-cloudwatch-adapter
+
+Create an IAM policy for Cloudwatch called `k8s-cloudwatch-get` and associate it with the EKS IAM role:
+
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "cloudwatch:GetMetricData"
+              ],
+              "Resource": "*"
+          }
+      ]
+    }
+
+Apply the adapter with kubectl:
+
+    kubectl apply -f https://raw.githubusercontent.com/awslabs/k8s-cloudwatch-adapter/master/deploy/adapter.yaml
+
 ### Install the cluster-autoscaler
 
 https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
