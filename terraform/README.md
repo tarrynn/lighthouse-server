@@ -62,6 +62,43 @@ You can then access the dashboard at (using the retrieved token from above):
 
     http://localhost:8080/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#!/login
 
+### Install prometheus for custom metrics
+
+https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html
+
+    kubectl create namespace prometheus
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+    helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
+
+    # access it at http://localhost:9090
+    kubectl --namespace=prometheus port-forward deploy/prometheus-server 9090
+
+### Install the k8s cloudwatch adapter if needed
+
+https://github.com/awslabs/k8s-cloudwatch-adapter
+
+Create an IAM policy for Cloudwatch called `k8s-cloudwatch-get` and associate it with the EKS IAM role:
+
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": [
+                  "cloudwatch:GetMetricData"
+              ],
+              "Resource": "*"
+          }
+      ]
+    }
+
+Apply the adapter with kubectl:
+
+    kubectl apply -f https://raw.githubusercontent.com/awslabs/k8s-cloudwatch-adapter/master/deploy/adapter.yaml
+
 ### Install the cluster-autoscaler
 
 https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html
@@ -92,6 +129,8 @@ Generate a helm values file based on `cluster-autoscaler-chart-values-template.y
 https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
 https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
 https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-setup/
+https://github.com/ContainerSolutions/k8s-deployment-strategies
+https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 
 ### Delete infra
 
