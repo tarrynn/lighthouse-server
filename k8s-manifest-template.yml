@@ -49,6 +49,11 @@ spec:
     matchLabels:
       app.kubernetes.io/name: app-lhci
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
   template:
     metadata:
       labels:
