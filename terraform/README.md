@@ -111,6 +111,10 @@ Generate a helm values file based on `cluster-autoscaler-chart-values-template.y
 
     helm install cluster-autoscaler --namespace kube-system autoscaler/cluster-autoscaler-chart --values=cluster-autoscaler-chart-values.yaml
 
+### Install Datadog helm chart
+
+https://docs.datadoghq.com/agent/kubernetes/?tab=helm
+
 ### Install ssm agent worker nodes
 
     eksctl create iamserviceaccount --name ssm-sa --cluster $(terraform output -raw cluster_name) --namespace kube-system \
